@@ -3,8 +3,10 @@
 //
 
 #include <gtest/gtest.h>
+#include <LIALogic.h>
 #include <BoolRewriting.h>
-#include <Logic.h>
+#include <LARewriter.h>
+#include <MainSolver.h>
 
 
 TEST(Rewriting_test, test_RewriteClassicConjunction)
@@ -36,6 +38,24 @@ TEST(Rewriting_test, test_RewriteClassicWithSimplification)
 //    std::cout << logic.printTerm(res) << std::endl;
     vec<PTRef> args {b,c,d};
     ASSERT_EQ(res, logic.mkAnd(args));
+}
+
+TEST(Rewriting_test, test_RewriteDivMod) {
+    LIALogic logic;
+    PTRef x = logic.mkNumVar("x");
+    PTRef two = logic.mkConst(2);
+    PTRef div = logic.mkNumDiv({x,two});
+    PTRef mod = logic.mkIntMod(x,two);
+    PTRef fla = logic.mkAnd(logic.mkEq(div, two), logic.mkEq(mod, logic.getTerm_NumZero()));
+    PTRef rewritten = DivModRewriter().rewriteDivMod(logic, fla);
+//    std::cout << logic.printTerm(rewritten) << std::endl;
+    SMTConfig config;
+    MainSolver solver(logic, config, "test");
+    solver.insertFormula(rewritten);
+    auto res = solver.check();
+    ASSERT_EQ(res, s_True);
+    auto model = solver.getModel();
+    ASSERT_EQ(model->evaluate(x), logic.mkConst(4));
 }
 
 
