@@ -216,7 +216,7 @@ PTRef LIALogic::insertTerm(SymRef sym, vec<PTRef> &terms) {
 PTRef LIALogic::mkNumDiv(const vec<PTRef> &args) {
     if (args.size() != 2) { throw OsmtApiException("Incorrect number of arguments to DIV function"); }
     PTRef divisor = args[1];
-    if (not isConstant(args[1])) {
+    if (not isConstant(divisor)) {
         throw LANonLinearException("Only division by constant is permitted in linear arithmetic!");
     }
     return insertTermHash(sym_Int_DIV, args);

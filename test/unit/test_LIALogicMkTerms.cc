@@ -46,4 +46,6 @@ TEST_F(LIALogicMkTermsTest, testDivMod) {
     PTRef two = logic.mkConst(2);
     PTRef div = logic.mkNumDiv({x,two});
     PTRef mod = logic.mkIntMod(x,two);
+    EXPECT_EQ(logic.getSymRef(div), logic.get_sym_Num_DIV());
+    EXPECT_EQ(logic.getSymRef(mod), logic.get_sym_Int_MOD());
 }
